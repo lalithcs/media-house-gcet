@@ -6,9 +6,8 @@
     <title>Media House - Official Media & PR Club of GCET</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
-    <!-- GLTFLoader for loading .glb 3D models -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -492,7 +491,8 @@
     <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full" style="z-index: 1;"></canvas>
 
     <!-- Launcher Section -->
-    <div id="launcher" class="fixed top-0 left-0 w-full h-full bg-[#0a0a0a] z-[9999] flex flex-col items-center justify-center transition-opacity duration-1000 ease-in-out launcher-fade-in">
+    <!-- Launcher - DISABLED -->
+    <div id="launcher" class="fixed top-0 left-0 w-full h-full bg-[#0a0a0a] z-[9999] flex flex-col items-center justify-center transition-opacity duration-1000 ease-in-out launcher-fade-in" style="display: none;">
         <div class="animate-pulse">
             <!-- PASTE YOUR SVG CODE HERE -->
              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" version="1.1" width="375" height="375" viewBox="0 0 375 375">
@@ -2486,7 +2486,7 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
     </div>
 
     <!-- Main Website Content -->
-    <div id="main-content" class="opacity-0" style="position: relative; z-index: 10;">
+    <div id="main-content" class="opacity-100" style="position: relative; z-index: 10;">
         <!-- Header -->
         <header id="home" class="bg-black/80 backdrop-blur-md fixed w-full z-50 top-0 border-b border-gray-800" style="position: relative; z-index: 100;">
             <div class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -3064,13 +3064,13 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                 function createMicrophone(x, y, z) {
                     const micGroup = new THREE.Group();
                     
-                    // Mic capsule (realistic shape)
+                    // Mic capsule (using cylinder instead of capsule)
                     const capsule = new THREE.Mesh(
-                        new THREE.CapsuleGeometry(0.4, 1.5, 16, 32),
+                        new THREE.CylinderGeometry(0.4, 0.4, 1.5, 32),
                         new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.85, roughness: 0.15 })
                     );
                     
-                    // Mesh grille
+                    // Mesh grille (hemisphere on top)
                     const grille = new THREE.Mesh(
                         new THREE.SphereGeometry(0.45, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2),
                         new THREE.MeshStandardMaterial({ color: 0x2a2a2a, metalness: 0.9, roughness: 0.2 })
@@ -3274,14 +3274,14 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                     return clapGroup;
                 }
                 
-                // Function to load .glb 3D model
+                // Function to load .glb 3D model with animations
                 function loadGLBModel(modelPath, x, y, z, scale = 1) {
                     const loader = new THREE.GLTFLoader();
                     
                     loader.load(
-                        modelPath,  // Path to your .glb file
+                        modelPath,
                         function (gltf) {
-                            // Success callback
+                            // Success - model loaded!
                             const model = gltf.scene;
                             
                             // Position the model
@@ -3290,23 +3290,40 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                             // Scale the model
                             model.scale.set(scale, scale, scale);
                             
-                            // Add custom rotation speed
-                            model.userData = { type: 'glb-model', rotSpeed: 0.003 };
+                            // Rotate model 90 degrees vertically (around X axis)
+                            model.rotation.x = Math.PI / 2; // 90 degrees in radians
+                            
+                            // Add rotation behavior - FASTER rotation!
+                            model.userData = { type: 'glb-model', rotSpeed: 0.02 };
+                            
+                            // Handle animations if the model has them
+                            if (gltf.animations && gltf.animations.length > 0) {
+                                const mixer = new THREE.AnimationMixer(model);
+                                model.userData.mixer = mixer;
+                                
+                                // Play all animations
+                                gltf.animations.forEach((clip) => {
+                                    mixer.clipAction(clip).play();
+                                });
+                                
+                                console.log('GLB model loaded with', gltf.animations.length, 'animations!');
+                            } else {
+                                console.log('GLB model loaded (no animations)');
+                            }
                             
                             // Add to scene
                             scene.add(model);
                             mediaObjects.push(model);
-                            
-                            console.log('GLB model loaded successfully!');
                         },
                         function (xhr) {
-                            // Progress callback
-                            const percentComplete = (xhr.loaded / xhr.total) * 100;
-                            console.log('Model loading: ' + percentComplete.toFixed(2) + '%');
+                            // Loading progress
+                            const percent = (xhr.loaded / xhr.total) * 100;
+                            console.log('Loading model: ' + percent.toFixed(2) + '%');
                         },
                         function (error) {
-                            // Error callback
+                            // Error loading
                             console.error('Error loading GLB model:', error);
+                            alert('Failed to load 3D model. Check console for details.');
                         }
                     );
                 }
@@ -3330,10 +3347,10 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                 
                 mediaObjects.forEach(obj => scene.add(obj));
                 
-                // Load your .glb 3D model - UNCOMMENT AND CUSTOMIZE THIS LINE
-                loadGLBModel('models/media-house.glb', 0, 0, -5, 2);
-                // Example: loadGLBModel('models/my-3d-object.glb', 0, 0, -5, 2);
+                // Load your .glb 3D model - ACTIVE!
+                loadGLBModel('models/media-house.glb', -25, 0, -5, 2);
                 // You can load multiple models by calling this function multiple times
+                // Example: loadGLBModel('models/another-model.glb', 5, 2, -3, 1.5);
 
                 // Add particles - fewer, larger, more visible
                 const particlesGeometry = new THREE.BufferGeometry();
@@ -3394,9 +3411,12 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
 
                 // Animation loop with MAGICAL movements and effects!
                 let time = 0;
+                const clock = new THREE.Clock(); // For animation mixer
+                
                 function animate() {
                     requestAnimationFrame(animate);
                     time += 0.01;
+                    const delta = clock.getDelta(); // Time since last frame
                     
                     // Magical particle rotation and drift
                     particlesMesh.rotation.y += 0.0008;
@@ -3405,6 +3425,11 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                     // Animate each media object with MAGICAL movements
                     mediaObjects.forEach((obj, index) => {
                         const userData = obj.userData;
+                        
+                        // Update animation mixer if model has animations
+                        if (userData.mixer) {
+                            userData.mixer.update(delta);
+                        }
                         
                         if (userData.type === 'camera') {
                             // Camera floats and rotates magically
@@ -3425,6 +3450,10 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                             obj.rotation.z = Math.sin(time * 1.5 + index) * 0.12;
                             obj.position.y += Math.sin(time * 1.0) * 0.012;
                             obj.rotation.x = Math.sin(time * 0.7) * 0.06;
+                        } else if (userData.type === 'glb-model') {
+                            // GLB model horizontal rotation (around Z axis) and float
+                            obj.rotation.z += userData.rotSpeed || 0.003;
+                            obj.position.y += Math.sin(time * 1.0) * 0.01;
                         }
                     });
                     
@@ -3552,6 +3581,8 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                 }
             });
             
+            // ===== LAUNCHER CODE - COMMENTED OUT =====
+            /*
             // Launcher logic
             const launcher = document.getElementById('launcher');
             const mainContent = document.getElementById('main-content');
@@ -3581,6 +3612,14 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                     countdownElement.textContent = countdown;
                 }
             }, 1000);
+            */
+            // ===== END LAUNCHER CODE =====
+            
+            // Skip launcher - show main content immediately
+            const launcher = document.getElementById('launcher');
+            const mainContent = document.getElementById('main-content');
+            if (launcher) launcher.style.display = 'none';
+            if (mainContent) mainContent.style.opacity = '1';
 
             // Main site logic
             lucide.createIcons();
