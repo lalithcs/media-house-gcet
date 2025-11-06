@@ -3401,13 +3401,53 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                 spotlightRight.angle = Math.PI / 4;
                 scene.add(spotlightRight);
 
-                // Resize handler
+                // Resize handler with mobile responsiveness
                 function onWindowResize() {
                     camera.aspect = window.innerWidth / window.innerHeight;
                     camera.updateProjectionMatrix();
                     renderer.setSize(window.innerWidth, window.innerHeight);
+                    
+                    // Adjust 3D objects for mobile screens
+                    const isMobile = window.innerWidth < 768;
+                    
+                    mediaObjects.forEach((obj) => {
+                        if (isMobile) {
+                            // Mobile: smaller scale and closer positioning
+                            if (obj.userData.type === 'camera') {
+                                obj.position.set(-8, 0, -3);
+                                obj.scale.set(1, 1, 1);
+                            } else if (obj.userData.type === 'clapper') {
+                                obj.position.set(0, -4, -2);
+                                obj.scale.set(1, 1, 1);
+                            } else if (obj.userData.type === 'mic') {
+                                obj.position.set(8, 2, -3);
+                                obj.scale.set(1, 1, 1);
+                            } else if (obj.userData.type === 'glb-model') {
+                                obj.position.set(-25, 0, -3); // Closer on mobile
+                                obj.scale.set(1, 1, 1); // Smaller on mobile
+                            }
+                        } else {
+                            // Desktop: original sizes and positions
+                            if (obj.userData.type === 'camera') {
+                                obj.position.set(-12, 0, -5);
+                                obj.scale.set(2, 2, 2);
+                            } else if (obj.userData.type === 'clapper') {
+                                obj.position.set(0, -6, -3);
+                                obj.scale.set(2, 2, 2);
+                            } else if (obj.userData.type === 'mic') {
+                                obj.position.set(12, 2, -5);
+                                obj.scale.set(2, 2, 2);
+                            } else if (obj.userData.type === 'glb-model') {
+                                obj.position.set(-45, 0, -5); // Original position
+                                obj.scale.set(2, 2, 2); // Original size
+                            }
+                        }
+                    });
                 }
                 window.addEventListener('resize', onWindowResize);
+                
+                // Call once on load to set initial sizes
+                onWindowResize();
 
                 // Animation loop with MAGICAL movements and effects!
                 let time = 0;
