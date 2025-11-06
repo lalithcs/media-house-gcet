@@ -3356,7 +3356,7 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                 // Load your .glb 3D models - ACTIVE!
                 loadGLBModel('models/media-house.glb', -25, 0, -5, 2, 'media-house');
                 // Geetanjali logo on the opposite side (right side)
-                loadGLBModel('models/geetanjali.glb', 45, 0, -5, 2, 'geetanjali');
+                loadGLBModel('models/geetanjali.glb', 25, 0, -5, 2, 'geetanjali');
 
                 // Add particles - fewer, larger, more visible
                 const particlesGeometry = new THREE.BufferGeometry();
@@ -3453,7 +3453,7 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                                     obj.position.set(-25, 0, -5); // Far left
                                     obj.scale.set(2, 2, 2);
                                 } else if (obj.userData.modelName === 'geetanjali') {
-                                    obj.position.set(45, 0, -5); // Far right (opposite)
+                                    obj.position.set(25, 0, -5); // Far right (exact opposite)
                                     obj.scale.set(2, 2, 2);
                                 }
                             }
