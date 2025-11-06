@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+    <!-- GLTFLoader for loading .glb 3D models -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -3272,6 +3274,43 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                     return clapGroup;
                 }
                 
+                // Function to load .glb 3D model
+                function loadGLBModel(modelPath, x, y, z, scale = 1) {
+                    const loader = new THREE.GLTFLoader();
+                    
+                    loader.load(
+                        modelPath,  // Path to your .glb file
+                        function (gltf) {
+                            // Success callback
+                            const model = gltf.scene;
+                            
+                            // Position the model
+                            model.position.set(x, y, z);
+                            
+                            // Scale the model
+                            model.scale.set(scale, scale, scale);
+                            
+                            // Add custom rotation speed
+                            model.userData = { type: 'glb-model', rotSpeed: 0.003 };
+                            
+                            // Add to scene
+                            scene.add(model);
+                            mediaObjects.push(model);
+                            
+                            console.log('GLB model loaded successfully!');
+                        },
+                        function (xhr) {
+                            // Progress callback
+                            const percentComplete = (xhr.loaded / xhr.total) * 100;
+                            console.log('Model loading: ' + percentComplete.toFixed(2) + '%');
+                        },
+                        function (error) {
+                            // Error callback
+                            console.error('Error loading GLB model:', error);
+                        }
+                    );
+                }
+                
                 // Position media objects - Simple and clean with just 3 iconic items!
                 
                 // LEFT - Professional Camera with Tripod
@@ -3290,6 +3329,11 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                 mic.scale.set(2, 2, 2);
                 
                 mediaObjects.forEach(obj => scene.add(obj));
+                
+                // Load your .glb 3D model - UNCOMMENT AND CUSTOMIZE THIS LINE
+                loadGLBModel('models/media-house.glb', 0, 0, -5, 2);
+                // Example: loadGLBModel('models/my-3d-object.glb', 0, 0, -5, 2);
+                // You can load multiple models by calling this function multiple times
 
                 // Add particles - fewer, larger, more visible
                 const particlesGeometry = new THREE.BufferGeometry();
