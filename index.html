@@ -2860,10 +2860,10 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                         </div>
                         <div class="bg-gray-900 p-6 rounded-lg border border-gray-800 flex-1 hover:border-red-500 transition-all duration-300">
                             <h3 class="text-xl font-semibold text-white mb-2">Student Coordinator</h3>
-                            <p class="text-lg">Mr. K.Saimithil</p>
+                            <p class="text-lg">Mr. Rayan Kelly</p>
                             <p class="text-gray-400 mt-2 flex items-center justify-center">
                                 <i data-lucide="phone" class="w-4 h-4 mr-2"></i>
-                                8328070910
+                                9515572669
                             </p>
                         </div>
                     </div>
@@ -3275,7 +3275,7 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                 }
                 
                 // Function to load .glb 3D model with animations
-                function loadGLBModel(modelPath, x, y, z, scale = 1) {
+                function loadGLBModel(modelPath, x, y, z, scale = 1, modelName = 'glb-model') {
                     const loader = new THREE.GLTFLoader();
                     
                     loader.load(
@@ -3294,7 +3294,13 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                             model.rotation.x = Math.PI / 2; // 90 degrees in radians
                             
                             // Add rotation behavior - FASTER rotation!
-                            model.userData = { type: 'glb-model', rotSpeed: 0.02 };
+                            model.userData = { 
+                                type: 'glb-model', 
+                                modelName: modelName,
+                                rotSpeed: 0.02,
+                                originalPos: {x, y, z},
+                                originalScale: scale
+                            };
                             
                             // Handle animations if the model has them
                             if (gltf.animations && gltf.animations.length > 0) {
@@ -3347,10 +3353,10 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                 
                 mediaObjects.forEach(obj => scene.add(obj));
                 
-                // Load your .glb 3D model - ACTIVE!
-                loadGLBModel('models/media-house.glb', -25, 0, -5, 2);
-                // You can load multiple models by calling this function multiple times
-                // Example: loadGLBModel('models/another-model.glb', 5, 2, -3, 1.5);
+                // Load your .glb 3D models - ACTIVE!
+                loadGLBModel('models/media-house.glb', -25, 0, -5, 2, 'media-house');
+                // Geetanjali logo on the opposite side (right side)
+                loadGLBModel('models/geetanjali.glb', 45, 0, -5, 2, 'geetanjali');
 
                 // Add particles - fewer, larger, more visible
                 const particlesGeometry = new THREE.BufferGeometry();
@@ -3423,8 +3429,13 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                                 obj.position.set(8, 2, -3);
                                 obj.scale.set(1, 1, 1);
                             } else if (obj.userData.type === 'glb-model') {
-                                obj.position.set(-25, 0, -3); // Closer on mobile
-                                obj.scale.set(1, 1, 1); // Smaller on mobile
+                                if (obj.userData.modelName === 'media-house') {
+                                    obj.position.set(-15, 0, -3); // Left side on mobile
+                                    obj.scale.set(1, 1, 1);
+                                } else if (obj.userData.modelName === 'geetanjali') {
+                                    obj.position.set(25, 0, -3); // Right side on mobile
+                                    obj.scale.set(1, 1, 1);
+                                }
                             }
                         } else {
                             // Desktop: original sizes and positions
@@ -3438,8 +3449,13 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                                 obj.position.set(12, 2, -5);
                                 obj.scale.set(2, 2, 2);
                             } else if (obj.userData.type === 'glb-model') {
-                                obj.position.set(-45, 0, -5); // Original position
-                                obj.scale.set(2, 2, 2); // Original size
+                                if (obj.userData.modelName === 'media-house') {
+                                    obj.position.set(-25, 0, -5); // Far left
+                                    obj.scale.set(2, 2, 2);
+                                } else if (obj.userData.modelName === 'geetanjali') {
+                                    obj.position.set(45, 0, -5); // Far right (opposite)
+                                    obj.scale.set(2, 2, 2);
+                                }
                             }
                         }
                     });
