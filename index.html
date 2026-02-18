@@ -573,6 +573,28 @@
             opacity: 0.6;
             cursor: not-allowed;
         }
+        /* Attention-grabbing animation for Join buttons */
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(239, 68, 68, 0.5), 0 0 40px rgba(239, 68, 68, 0.3);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(239, 68, 68, 0.8), 0 0 60px rgba(239, 68, 68, 0.5), 0 0 80px rgba(239, 68, 68, 0.3);
+                transform: scale(1.05);
+            }
+        }
+        .join-button-pulse {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        @keyframes bounce-attention {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        .bounce-hint {
+            animation: bounce-attention 2s ease-in-out infinite;
+        }
     </style>
 </head>
 <body class="bg-black text-white min-h-screen relative">
@@ -2593,7 +2615,7 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                     <a href="#services" class="hover:text-red-500 transition-colors duration-300">Services</a>
                     <a href="#team" class="hover:text-red-500 transition-colors duration-300">Team</a>
                     <a href="#contact" class="hover:text-red-500 transition-colors duration-300">Contact</a>
-                    <button onclick="openRegistrationModal()" class="px-6 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
+                    <button onclick="openRegistrationModal()" class="px-6 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 join-button-pulse">
                         🎯 Join Us
                     </button>
                 </nav>
@@ -2625,9 +2647,9 @@ AACR4f8BsYcUjkLLCNIAAAAASUVORK5CYII="/>
                             Welcome to Media House, the official Media and Public Relations club of Geethanjali College of Engineering and Technology. We create, capture, and communicate.
                         </p>
                         <div class="mt-8 flex justify-center gap-4">
-                            <a href="#recruitments" class="btn-primary bg-red-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-red-700 transition-transform transform hover:scale-105 shadow-lg shadow-red-600/20">
-                                Join The Team
-                            </a>
+                            <button onclick="openRegistrationModal()" class="btn-primary bg-red-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-red-700 transition-transform transform hover:scale-105 shadow-lg shadow-red-600/20 join-button-pulse bounce-hint">
+                                🎯 Join The Team
+                            </button>
                             <a href="#about" class="btn-primary bg-gray-700 text-white font-bold py-3 px-8 rounded-lg hover:bg-gray-600 transition-transform transform hover:scale-105">
                                 Learn More
                             </a>
